@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Usuario;
+use App\Entity\Persona;
 use App\Form\RegistrationFormType;
 use App\Repository\UsuarioRepository;
 use App\Security\EmailVerifier;
@@ -26,9 +27,10 @@ class RegistrationController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        $persona = new Persona();
         $user = new Usuario();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -41,7 +43,12 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
+            
+            $persona = $form->get('Persona')->getData();
+            $entityManager->persist($persona);
 
+            $user->setRoles(['ROLE_USER']);
+            
             $entityManager->persist($user);
             $entityManager->flush();
 

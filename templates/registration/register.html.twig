@@ -11,11 +11,15 @@
 
     {{ form_start(registrationForm) }}
         {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
+        {{ form_row(registrationForm.plainPassword, {label: 'Password'})}}
+        {{ form_row(registrationForm.Persona.nombres)}}
+        {{ form_row(registrationForm.Persona.apellidoMaterno)}}
+        {{ form_row(registrationForm.Persona.apellidoPaterno)}}
+        {{ form_row(registrationForm.Persona.numDocumento)}}
+        {{ form_row(registrationForm.Persona.direccion)}}
+        {{ form_row(registrationForm.Persona.telefono)}}
         {{ form_row(registrationForm.agreeTerms) }}
-
+        
         <button type="submit" class="btn">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}
