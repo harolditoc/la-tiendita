@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsuarioRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
@@ -20,6 +21,8 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -37,14 +40,6 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'usuarios')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Persona $persona = null;
-
-    #[ORM\OneToMany(mappedBy: 'usuario', targetEntity: Producto::class)]
-    private Collection $productos;
-
-    public function __construct()
-    {
-        $this->productos = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -136,36 +131,6 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPersona(?Persona $persona): self
     {
         $this->persona = $persona;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Producto>
-     */
-    public function getProductos(): Collection
-    {
-        return $this->productos;
-    }
-
-    public function addProducto(Producto $producto): self
-    {
-        if (!$this->productos->contains($producto)) {
-            $this->productos->add($producto);
-            $producto->setUsuario($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProducto(Producto $producto): self
-    {
-        if ($this->productos->removeElement($producto)) {
-            // set the owning side to null (unless already changed)
-            if ($producto->getUsuario() === $this) {
-                $producto->setUsuario(null);
-            }
-        }
 
         return $this;
     }

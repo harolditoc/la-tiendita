@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Categoria;
 use App\Entity\Producto;
-use App\Form\Producto1Type;
+use App\Form\CategoriaType;
+use App\Form\ProductoType;
 use App\Repository\ProductoRepository;
+use Doctrine\ORM\Mapping\OrderBy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,11 +16,32 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/producto')]
 class ProductoController extends AbstractController
 {
-    #[Route('/', name: 'app_producto_index', methods: ['GET'])]
-    public function index(ProductoRepository $productoRepository): Response
+    #[Route('/', name: 'app_producto_index', methods: ['GET','POST'])]
+    public function index(ProductoRepository $productoRepository, Request $request): Response
     {
-        return $this->render('producto/index.html.twig', [
-            'productos' => $productoRepository->findAll(),
+        // $productos = $productoRepository->findAll();
+        
+        $form = $this->createForm(CategoriaType::class);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $categoria = $form->get('nombre')->getData();
+            if ($categoria instanceof Categoria) {
+                $productos = $productoRepository->findBy(['categoria' => $categoria]);
+            } else {
+                $productos = $productoRepository->findAll();
+            }
+            
+        } else {
+            $productos = $productoRepository->findAll();
+        }
+        $productos_array = array_map(function($producto) {
+            return $producto->toArray();
+        }, $productos);
+
+        return $this->renderForm('producto/index.html.twig', [
+            'productos' => $productos_array,   
+            'form' => $form,
         ]);
     }
 
@@ -25,7 +49,7 @@ class ProductoController extends AbstractController
     public function new(Request $request, ProductoRepository $productoRepository): Response
     {
         $producto = new Producto();
-        $form = $this->createForm(Producto1Type::class, $producto);
+        $form = $this->createForm(ProductoType::class, $producto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -51,7 +75,7 @@ class ProductoController extends AbstractController
     #[Route('/{id}/edit', name: 'app_producto_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Producto $producto, ProductoRepository $productoRepository): Response
     {
-        $form = $this->createForm(Producto1Type::class, $producto);
+        $form = $this->createForm(ProductoType::class, $producto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

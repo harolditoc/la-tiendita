@@ -27,20 +27,20 @@ class Persona
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $tipoDocumento = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $numDocumento = null;
-
     #[ORM\Column(length: 192, nullable: true)]
     private ?string $direccion = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $telefono = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $foto = null;
 
     #[ORM\OneToMany(mappedBy: 'persona', targetEntity: Usuario::class)]
     private Collection $usuarios;
+
+    #[ORM\Column(length: 32)]
+    private ?string $numDocumento = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $telefono = null;
 
     public function __construct()
     {
@@ -100,18 +100,6 @@ class Persona
         return $this;
     }
 
-    public function getNumDocumento(): ?int
-    {
-        return $this->numDocumento;
-    }
-
-    public function setNumDocumento(?int $numDocumento): self
-    {
-        $this->numDocumento = $numDocumento;
-
-        return $this;
-    }
-
     public function getDireccion(): ?string
     {
         return $this->direccion;
@@ -120,18 +108,6 @@ class Persona
     public function setDireccion(?string $direccion): self
     {
         $this->direccion = $direccion;
-
-        return $this;
-    }
-
-    public function getTelefono(): ?int
-    {
-        return $this->telefono;
-    }
-
-    public function setTelefono(?int $telefono): self
-    {
-        $this->telefono = $telefono;
 
         return $this;
     }
@@ -174,6 +150,30 @@ class Persona
                 $usuario->setPersona(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNumDocumento(): ?string
+    {
+        return $this->numDocumento;
+    }
+
+    public function setNumDocumento(string $numDocumento): self
+    {
+        $this->numDocumento = $numDocumento;
+
+        return $this;
+    }
+
+    public function getTelefono(): ?string
+    {
+        return $this->telefono;
+    }
+
+    public function setTelefono(string $telefono): self
+    {
+        $this->telefono = $telefono;
 
         return $this;
     }

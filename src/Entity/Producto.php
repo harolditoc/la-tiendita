@@ -29,9 +29,11 @@ class Producto
     #[ORM\Column]
     private ?bool $estado = null;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $imagen = null;
+
     #[ORM\ManyToOne(inversedBy: 'productos')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Usuario $usuario = null;
+    private ?Categoria $categoria = null;
 
     public function getId(): ?int
     {
@@ -98,15 +100,41 @@ class Producto
         return $this;
     }
 
-    public function getUsuario(): ?Usuario
+    public function getImagen(): ?string
     {
-        return $this->usuario;
+        return $this->imagen;
     }
 
-    public function setUsuario(?Usuario $usuario): self
+    public function setImagen(string $imagen): self
     {
-        $this->usuario = $usuario;
+        $this->imagen = $imagen;
 
         return $this;
+    }
+    
+    public function getCategoria(): ?Categoria
+    {
+        return $this->categoria;
+    }
+
+    public function setCategoria(?Categoria $categoria): self
+    {
+        $this->categoria = $categoria;
+
+        return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nombre' => $this->getNombre(),
+            'inventario' => $this->getInventario(),
+            'descripcion' => $this->getDescripcion(),
+            'precio' => $this->getPrecio(),
+            'estado' => $this->isEstado(),
+            'imagen' => $this->getImagen(),
+            'categoria' => $this->getCategoria()->getNombre()
+        ];
     }
 }
